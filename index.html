@@ -107,13 +107,13 @@
                         <li v-for="phase in phases" v-show="phase.isActive" :key="phase.text">
                             <span>Phase Summary:</span>
                             <ul>
-                                <li v-for="rule in phase.rules" :key="phase.text">
+                                <li v-for="rule in phase.rules" :key="rule">
                                     {{ rule }}
                                 </li>
                             </ul>
                             <span>Definitions:</span>
                             <ul>
-                                <li v-for="definition in phase.definitions" :key="phase.text">
+                                <li v-for="definition in phase.definitions" :key="definition.title">
                                     {{ definition.title }}
                                     <ul v-for="rule in definition.rules">
                                         <li>

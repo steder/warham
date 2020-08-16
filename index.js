@@ -10,7 +10,12 @@ const store = new Vuex.Store({
     },
     mutations: {
         nextTurn(state) {
-            state.turn = ((state.turn + 1) % 6 == 0) ? 1 : ((state.turn + 1) % 6);
+            console.log(state.turn)
+            if ((state.turn+1) > 5) {
+                state.turn = 1
+            } else {
+                state.turn += 1
+            }
             localStorage.setItem('turn', state.turn);
         },
         playerScores(state) {
@@ -35,9 +40,9 @@ const store = new Vuex.Store({
                 localStorage.setItem('warham-version', '0.1.0');
                 this.reset(state);
             }
-            state.turn = localStorage.getItem('turn');
-            state.playerScore = localStorage.getItem('playerScore');
-            state.opponentScore = localStorage.getItem('opponentScore');
+            state.turn = parseInt(localStorage.getItem('turn'));
+            state.playerScore = parseInt(localStorage.getItem('playerScore'));
+            state.opponentScore = parseInt(localStorage.getItem('opponentScore'));
         },
     }
 })
@@ -100,17 +105,39 @@ Vue.component('warhammer-score-sheet', {
     computed: {
         primaryScorePrevious() {
             var currentTurn = this.$store.state.turn;
-            return this.primaryScores.slice(0, currentTurn).reduce((a, b) => a + b)
+            // slice doesn't work reactively as it creates a slice that is a new
+            // object and vue doesn't see it change:
+            //return this.primaryScores.slice(0, currentTurn).reduce((a, b) => a + b)
+            var sum = 0;
+            for (i = 0; i < 5; i++) {
+                if ((i+1) >= currentTurn) {
+                    break;
+                }
+                sum += this.primaryScores[i];
+            }
+            return sum;
+        },
+        primaryScoreTotal() {
+            var sum = 0;
+            for (i = 0; i < 5; i++) {
+                sum += this.primaryScores[i];
+            }
+            return sum;
         },
         currentPrimaryScore: {
             get: function () {
                 var currentTurn = this.$store.state.turn;
-                return this.primaryScores[currentTurn];
+                return this.primaryScores[currentTurn-1];
             },
             set: function (newScore) {
                 var currentTurn = this.$store.state.turn;
                 // this.primaryScores[currentTurn] = newScore;
-                Vue.set(this.primaryScores, currentTurn, newScore)
+                var newScore = parseInt(newScore);
+                if (!isNaN(newScore)) {
+                    if (newScore > 0 && newScore <= 15) {
+                        this.$set(this.primaryScores, currentTurn-1, newScore)
+                    }
+                }
             }
         }
     },
@@ -127,6 +154,7 @@ Vue.component('warhammer-score-sheet', {
             <input v-model="primaryScores"></input>
             <span>Primary Score So Far: {{primaryScorePrevious}}</span>
             <input v-model="currentPrimaryScore"></input>
+            <span>Total Primary Score: {{primaryScoreTotal}}</span>
         </div>
         <div id="secondaryScoreOne" class="secondaryScore">
             <span>Player {{player_id}} Secondary Score 1:</span>
@@ -143,7 +171,8 @@ Vue.component('warhammer-score-sheet', {
     </div>
     `
 })
-// <span>{{player.primaryScores.slice(0, this.$store.state.turn).reduce((a,b) => a+b)}}</span> <input v-model="player.primaryScores[this.$store.state.turn]"></input>
+
+
 var app = new Vue({
     el: '#app',
     store: store,
