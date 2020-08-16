@@ -11,18 +11,34 @@ const store = new Vuex.Store({
   mutations: {
     nextTurn (state) {
         state.turn = ((state.turn+1)%6==0) ? 1 : ((state.turn+1)%6);
+        localStorage.setItem('turn', state.turn);
     },
     playerScores(state) {
         state.playerScore++;
+        localStorage.setItem('playerScore', state.playerScore);
     },
     opponentScores(state) {
         state.opponentScore++;
+        localStorage.setItem('opponentScore', state.opponentScore);
     },
     reset (state) {
         state.turn = 1;
         state.playerScore = 0;
         state.opponentScore = 0;
-    }
+        localStorage.setItem('turn', 1);
+        localStorage.setItem('playerScore', 0);
+        localStorage.setItem('opponentScore', 0);
+    },
+    initialiseStore(state) {     
+        var version = localStorage.getItem('warham-version');
+        if (!version) {
+            localStorage.setItem('warham-version', '0.1.0');
+            this.reset(state);
+        }
+        state.turn = localStorage.getItem('turn');
+        state.playerScore = localStorage.getItem('playerScore');
+        state.opponentScore = localStorage.getItem('opponentScore');
+    },
   }
 })
 
@@ -72,6 +88,7 @@ Vue.component('warhammer-turn-tracker', {
 var app = new Vue({ 
     el: '#app',
     store: store,
+    beforeCreate() { this.$store.commit('initialiseStore');},
     data: {
         message: 'Hello Vue!',
         hoverMessage: 'Hello Hover!',
