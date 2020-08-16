@@ -13,3 +13,7 @@ html, body {
 span.active {
     font-weight: bold;
 }
+
+.scoreboard {
+    font-size: 3rem;
+}

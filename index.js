@@ -11,7 +11,6 @@ const store = new Vuex.Store({
   mutations: {
     nextTurn (state) {
         state.turn = ((state.turn+1)%6==0) ? 1 : ((state.turn+1)%6);
-    
     },
     playerScores(state) {
         state.playerScore++;
@@ -49,21 +48,21 @@ Vue.component('warhammer-turn-tracker', {
     },
     template: `
     <div>
-        <div>
+        <div class="scoreboard">
             <span>Turn {{this.$store.state.turn}}</span>
         </div>
-        <div>
+        <div class="scoreboard">
+            <span class="badge badge-success">P1</span>
             <span>{{this.$store.state.playerScore}}</span>
             <span>-</span>
+            <span class="badge badge-secondary">P2</span>
             <span>{{this.$store.state.opponentScore}}</span>
         </div>
-        <div>
-            <button v-on:click="playerScores">Player +</button>
-            <button v-on:click="opponentScores">Opponent +</button>
-        </div>
-        <div>
-            <button v-on:click="advanceTurn">Turn</button>
-            <button v-on:click="reset">Reset</button>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-success" v-on:click="playerScores">Player +</button>
+            <button type="button" class="btn btn-secondary" v-on:click="opponentScores">Opponent +</button>
+            <button type="button" class="btn btn-warning" v-on:click="advanceTurn">Turn</button>
+            <button type="button" class="btn btn-danger" v-on:click="reset">Reset</button>
         </div>
     </div>
     `
@@ -82,13 +81,38 @@ var app = new Vue({
         ready: false,
         todos: [{text: 'Learn some basics'}, {text: 'Layout a dashboard'}, {text:'With interconnected toggles and state'}],
         phases: [
-            {text:'Command', isActive:false}, 
-            {text:'Movement', isActive:false},
-            {text:'Psychic', isActive:false},
-            {text:'Shooting', isActive:false},
-            {text:'Charge', isActive:false},
-            {text:'Fight', isActive:false}, 
-            {text:'Morale', isActive:false},
+            {text:'Command', isActive:false, rules:[
+                "Battle-forged CP bonus: Gain 1 CP if army is Battle- forged.",
+            "Resolve any rules that occur in the Command phase.", 
+            "Progress to the Movement phase (pg 10).",
+             ],
+             definitions: [],
+            }, 
+            {text:'Movement', isActive:false, rules:[
+                "Select a unit in your army to move.",
+"When a unit moves it can either make a Normal Move, Advance or Remain Stationary.",
+"Units that are within Engagement Range of any enemy models can only either Fall Back or Remain Stationary. Select another unit in your army to move.",
+"Once all your units have moved, progress to the Reinforcements step (pg 11).",
+            ], definitions: [{"title": "Normal Move", 
+            rules:["Normal Move: Models move up to M.",
+            "Cannot move within Engagement Range of any enemy models."],},
+        ]
+        },
+            {text:'Movement (Reinforcement)', isActive:false, rules:[
+                "Reinforcement unit: Unit that starts the battle in a location other than the battlefield.",
+"Set up your Reinforcement units, one at a time, as described by the rules that let them start the battle in locations other than the battlefield.",
+"Reinforcement units cannot make a Normal Move, an Advance, Fall Back or Remain Stationary this turn. Reinforcement units always count as having moved this turn.",
+"Any Reinforcement unit not set up on the battlefield by the end of the battle counts as destroyed.",
+"Once all your Reinforcement units have been set up, progress to the Psychic phase (pg 14).",
+            ], definitions:[]},
+            /* TODO: add this section:
+            {text: 'Movement (Transports), isActive:false, rules:[], definitions: []} 
+            */
+            {text:'Psychic', isActive:false, rules:[], definitions: []},
+            {text:'Shooting', isActive:false, rules:[], definitions: []},
+            {text:'Charge', isActive:false, rules:[], definitions: []},
+            {text:'Fight', isActive:false, rules:[], definitions: []}, 
+            {text:'Morale', isActive:false, rules:[], definitions: []},
         ],
     },
     methods: {
@@ -106,5 +130,4 @@ var app = new Vue({
             })
         }
       },
-
 });
