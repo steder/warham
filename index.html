@@ -73,7 +73,14 @@
                 <warhammer-turn-tracker></warhammer-turn-tracker>
             </div>
             <div class="col">
+ 
+            </div>
+        </div>
+        <div class="row">
+            <!-- MIDDLE ROW -->
+            <div class="col">
                 <div id="phases-list">
+                    <span>Phase Rules</span>
                     <ol>
                         <li v-for="phase in phases">
                             <span v-bind:class="{active: phase.isActive}" v-on:click="selectPhase($event, phase)"
@@ -84,26 +91,18 @@
                     </ol>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <!-- MIDDLE ROW -->
-            <div class="col">
-                <div id="todo-list">
-                    <ol>
-                        <li v-for="todo in todos">
-                            {{ todo.text }}
-                        </li>
-                    </ol>
-                </div>
-            </div>
             <div class="col">
                 <!-- middle middle -->
                 <warhammer-score-sheet v-bind:player=1></warhammer-score-sheet>
-                <warhammer-score-sheet v-bind:player=2></warhammer-score-sheet>
-
             </div>
             <div class="col">
                 <!-- Right Middle Column -->
+                <warhammer-score-sheet v-bind:player=2></warhammer-score-sheet>
+            </div>
+        </div>
+        <div class="row">
+            <!-- BOTTOM ROW -->
+            <div class="col">
                 <div id="phases-rules">
                     <ul>
                         <li v-for="phase in phases" v-show="phase.isActive" :key="phase.text">
@@ -127,12 +126,14 @@
                         </li>
                     </ul>
                 </div>
-            </div>
-        </div>
-        <div class="row">
-            <!-- BOTTOM ROW -->
-            <div class="col">
-
+                <div id="todo-list">
+                    <span>Todos!</span>
+                    <ol>
+                        <li v-for="todo in todos">
+                            {{ todo.text }}
+                        </li>
+                    </ol>
+                </div>
             </div>
             <div class="col">
             </div>

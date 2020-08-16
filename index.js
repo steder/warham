@@ -222,18 +222,24 @@ Vue.component('warhammer-score-sheet', {
         </div>
         <div id="secondaryScoreOne" class="secondaryScore">
             <span>1st Secondary Score: {{secondaryOneScore}}</span>
-            <button class="btn btn-success" v-on:click="incrementSecondary(1)">+1</button>
-            <button class="btn btn-danger" v-on:click="decrementSecondary(1)">-1</button>
+            <div class="btn-group" role="group">
+                <button class="btn btn-success" v-on:click="incrementSecondary(1)">+1</button>
+                <button class="btn btn-danger" v-on:click="decrementSecondary(1)">-1</button>
+            </div>
         </div>
         <div id="secondaryScoreTwo" class="secondaryScore">
             <span>2nd Secondary Score: {{secondaryTwoScore}}</span>
-            <button class="btn btn-success" v-on:click="incrementSecondary(2)">+1</button>
-            <button class="btn btn-danger" v-on:click="decrementSecondary(2)">-1</button>
+            <div class="btn-group" role="group">
+                <button class="btn btn-success" v-on:click="incrementSecondary(2)">+1</button>
+                <button class="btn btn-danger" v-on:click="decrementSecondary(2)">-1</button>
+            </div>
         </div>
         <div id="secondaryScoreThree" class="secondaryScore">
             <span>3rd Secondary Score: {{secondaryThreeScore}}</span>
-            <button class="btn btn-success" v-on:click="incrementSecondary(3)">+1</button>
-            <button class="btn btn-danger" v-on:click="decrementSecondary(3)">-1</button>
+            <div class="btn-group" role="group">
+                <button class="btn btn-success" v-on:click="incrementSecondary(3)">+1</button>
+                <button class="btn btn-danger" v-on:click="decrementSecondary(3)">-1</button>
+            </div>
         </div>
     </div>
     `
