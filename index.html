@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+        <link rel="stylesheet" href="css/all.css">
+        <link rel="stylesheet" href="index.css">
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuex/dist/vuex.js"></script>
+    </head>
+    <body>
+        <div id="app" class="container">
+            <div class="row">
+                <div class="col">
+                    {{ message }}   
+                    <transition name="fade">
+                        <!-- needs .fade-* css classes defined? -->
+                        <span v-if="ready"><i class="fas fa-check-circle"></i></span>
+                    </transition>
+                    <div>
+                        <input v-model="player1"></input> vs
+                        <input v-model="player2"></input>
+                    </div>
+                    <div v-bind:title="hoverMessage">
+                        {{ accessMessage }}
+                    </div>
+                    <div id="controls">
+                        <ul>
+                            <li v-if="!ready">
+                                <button v-on:click="readyToggle">Ready</button>
+                            </li>
+                            <li v-if="ready">
+                                <button v-on:click="readyToggle">Un-ready</button>
+                            </li>      
+                        </ul>
+                    </div>
+                </div>
+                <div class="col">
+                    <warhammer-turn-tracker></warhammer-turn-tracker>
+                    <div id="todo-list">
+                        <ol>
+                        <li v-for="todo in todos">
+                            {{ todo.text }}
+                        </li>
+                        </ol>
+                    </div>
+                 </div>
+                <div class="col">
+                <div id="phases-list">
+                    <ol>
+                    <li v-for="phase in phases">
+                        <span v-bind:class="{active: phase.isActive}" v-on:click="selectPhase($event, phase)" :key="phase.text">
+                            {{ phase.text }}
+                        </span>
+                    </li>
+                    </ol>
+                </div>
+            </div>
+            </div>
+        </div>
+        <script src="index.js"></script>
+    </body>
+</html>
