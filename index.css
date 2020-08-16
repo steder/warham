@@ -13,7 +13,9 @@ html, body {
 span.active {
     font-weight: bold;
 }
-
+.row.spacer {
+    height: 5rem;
+}
 .scoreboard {
     font-size: 3rem;
 }

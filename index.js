@@ -44,6 +44,14 @@ const store = new Vuex.Store({
             state.playerScore = parseInt(localStorage.getItem('playerScore'));
             state.opponentScore = parseInt(localStorage.getItem('opponentScore'));
         },
+        setPlayerScore(state, payload) {
+            console.log(state, payload)
+            if (payload.player == 1) {
+                state.playerScore = payload.score;
+            } else if (payload.player == 2) {
+                state.opponentScore = payload.score;
+            }
+        },
     }
 })
 
@@ -93,14 +101,56 @@ Vue.component('warhammer-turn-tracker', {
 Vue.component('warhammer-score-sheet', {
     data: function () {
         return {
-            player_id: 1,
             primaryScores: [0, 0, 0, 0, 0],
-            secondaryOneScores: [],
-            secondaryTwoScores: [],
-            secondaryThreeScores: [],
+            secondaryOneScore: 0,
+            secondaryTwoScore: 0,
+            secondaryThreeScore: 0,
         };
     },
+    props: ['player'],
     methods: {
+        incrementPrimaryScore() {
+            this.currentPrimaryScore += 5;
+        },
+        decrementPrimaryScore() {
+            this.currentPrimaryScore -= 5;
+        },
+        incrementSecondary(secondaryNumber) {
+            if (secondaryNumber == 1) {
+                if (this.secondaryOneScore < 15) {
+                    this.secondaryOneScore += 1
+                }
+            } else if (secondaryNumber == 2) {
+                if (this.secondaryTwoScore < 15) {
+                    this.secondaryTwoScore += 1
+                }
+            } else if (secondaryNumber == 3) {
+                if (this.secondaryThreeScore < 15) {
+                    this.secondaryThreeScore += 1
+                }
+            }
+            var playerScore = (this.primaryScores.reduce((a, b) => a+b) + this.secondaryOneScore + this.secondaryTwoScore + this.secondaryThreeScore);
+            console.log(playerScore);
+            this.$store.commit('setPlayerScore', {player: this.player, score: playerScore});   
+        },
+        decrementSecondary(secondaryNumber) {
+            if (secondaryNumber == 1) {
+                if (this.secondaryOneScore > 0) {
+                    this.secondaryOneScore -= 1
+                }
+            } else if (secondaryNumber == 2) {
+                if (this.secondaryTwoScore > 0) {
+                    this.secondaryTwoScore -= 1
+                }
+            } else if (secondaryNumber == 3) {
+                if (this.secondaryThreeScore > 0) {
+                    this.secondaryThreeScore -= 1
+                }
+            }
+            var playerScore = (this.primaryScores.reduce((a, b) => a+b) + this.secondaryOneScore + this.secondaryTwoScore + this.secondaryThreeScore);
+            console.log(playerScore);
+            this.$store.commit('setPlayerScore', {player: this.player, score: playerScore});   
+        },
     },
     computed: {
         primaryScorePrevious() {
@@ -133,40 +183,57 @@ Vue.component('warhammer-score-sheet', {
                 var currentTurn = this.$store.state.turn;
                 // this.primaryScores[currentTurn] = newScore;
                 var newScore = parseInt(newScore);
-                if (!isNaN(newScore)) {
-                    if (newScore > 0 && newScore <= 15) {
-                        this.$set(this.primaryScores, currentTurn-1, newScore)
-                    }
+                const primaryTotal = this.primaryScores.reduce((a,b) => a+b);
+                if (!isNaN(newScore) && primaryTotal < 45) {
+                    // if ((primaryTotal + newScore) > 45) {
+                    //     console.log("Clamping total score...")
+                    //     newScore = 46 - primaryTotal;
+                    //     this.$set(this.primaryScores, currentTurn-1, newScore);
+                    // }
+                    if (newScore >= 0 && newScore <= 15) {
+                        console.log("clamping turn score")
+                        this.$set(this.primaryScores, currentTurn-1, newScore);
+                        var playerScore = (this.primaryScores.reduce((a, b) => a+b) + this.secondaryOneScore + this.secondaryTwoScore + this.secondaryThreeScore);
+                        console.log(playerScore);
+                        this.$store.commit('setPlayerScore', {player: this.player, score: playerScore});                    }
                 }
             }
-        }
+        },
     },
     watch: {
 
     },
     template: `
     <div class="scoresheet">
-        <div class="scoreboard">
-            <span>Turn {{this.$store.state.turn}}</span>
-        </div>
         <div id="primaryScore" class="primaryScore">
-            <span>Player {{player_id}} Primary Score:</span>
-            <input v-model="primaryScores"></input>
-            <span>Primary Score So Far: {{primaryScorePrevious}}</span>
-            <input v-model="currentPrimaryScore"></input>
-            <span>Total Primary Score: {{primaryScoreTotal}}</span>
+            <span>Player {{ player }} Primary Score: {{primaryScoreTotal}}</span>
+            <!-- <input v-model="primaryScores"></input> -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item" v-for="score in primaryScores">{{score}}</li>
+                </ol>
+            </nav>
+            <!-- <span>Primary Score So Far: {{primaryScorePrevious}}</span> -->
+            <!-- <input v-model="currentPrimaryScore"></input> -->
+            <div class="btn-group" role="group">
+                <button class="btn btn-success" v-on:click="incrementPrimaryScore">+5</button>
+                <button class="btn btn-danger" v-on:click="decrementPrimaryScore">-5</button>
+            </div>
         </div>
         <div id="secondaryScoreOne" class="secondaryScore">
-            <span>Player {{player_id}} Secondary Score 1:</span>
-
+            <span>1st Secondary Score: {{secondaryOneScore}}</span>
+            <button class="btn btn-success" v-on:click="incrementSecondary(1)">+1</button>
+            <button class="btn btn-danger" v-on:click="decrementSecondary(1)">-1</button>
         </div>
         <div id="secondaryScoreTwo" class="secondaryScore">
-            <span>Player {{player_id}} Secondary Score 2:</span>
-
+            <span>2nd Secondary Score: {{secondaryTwoScore}}</span>
+            <button class="btn btn-success" v-on:click="incrementSecondary(2)">+1</button>
+            <button class="btn btn-danger" v-on:click="decrementSecondary(2)">-1</button>
         </div>
         <div id="secondaryScoreThree" class="secondaryScore">
-            <span>Player {{player_id}} Secondary Score 3:</span>
-
+            <span>3rd Secondary Score: {{secondaryThreeScore}}</span>
+            <button class="btn btn-success" v-on:click="incrementSecondary(3)">+1</button>
+            <button class="btn btn-danger" v-on:click="decrementSecondary(3)">-1</button>
         </div>
     </div>
     `
